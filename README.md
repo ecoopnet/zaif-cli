@@ -5,6 +5,9 @@
 - Python3.6+
 - jq
 
+## 動作確認環境
+- Mac OS X Sierra (10.12.6)
+
 ## 準備
 - ZaifからAPIキー、シークレットを取得し、環境変数ZAIF_API_KEY, ZAIF_API_SECRET に保存してください。
 - setup.sh を実行してください。
