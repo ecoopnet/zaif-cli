@@ -5,12 +5,13 @@ from __future__ import print_function
 # datetime,timestamp, currency_pair, action, amount, fee_amount,price,bonus,commen
 # 2017/11/7 7:32,1510039948,zaif_jpy,bid,10000,0,0.4698,,,4698,
 
-import json, sys
+import sys
 import functools
+from decimal import *
+import simplejson as json
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
-
 
 input = json.load(sys.stdin, encoding='utf-8')
 
@@ -30,19 +31,19 @@ def each(subtotal, v):
   record = v[1]
   # bid = buy, ask = sell
   is_sell = record['your_action'] == 'ask'
-  sign= (-1 if is_sell else 1)
+  sign= (Decimal('-1') if is_sell else Decimal('1'))
   key = record['currency_pair']
   prev = subtotal[key] if key in subtotal else {
-    'amount': 0, 
-    'subtotal_jpy': 0, 
-    'unit_price': 0,
-    'benefit': 0
+    'amount': Decimal('0'), 
+    'subtotal_jpy': Decimal('0'), 
+    'unit_price': Decimal('0'),
+    'benefit': Decimal('0')
   }
-  amount = float(record['amount'])
-  fee_amount = float(record['fee_amount'])
-  price = float(record['price'])
+  amount = Decimal(record['amount'])
+  fee_amount = Decimal(record['fee_amount'])
+  price = Decimal(record['price'])
   # bid のときは手数料が通貨単位で、買った量から差し引かれる
-  diff_amount = amount - (fee_amount if not is_sell else 0)
+  diff_amount = amount - (fee_amount if not is_sell else Decimal('0'))
   # ask のときは手数料が円単位
   payed_price = fee_amount if is_sell else fee_amount * price
   # 累積通貨資産
@@ -52,7 +53,7 @@ def each(subtotal, v):
   # 現時点の単価
   unit_price = subtotal_jpy / amount
   # 現時点の利益(sellで初めて計上)
-  diff_benefit=0
+  diff_benefit=Decimal('0')
   if is_sell:
     diff_benefit = diff_amount * (price - prev['unit_price'])
   benefit = prev['benefit'] + diff_benefit
@@ -73,7 +74,7 @@ result = functools.reduce(each, sorted(input.items()), {})
 def sum_benefit(total, v):
   return total + v[1]['benefit']
 
-result['total'] = {'benefit':functools.reduce(sum_benefit, result.items(), 0) }
+result['total'] = {'benefit':functools.reduce(sum_benefit, result.items(), Decimal('0')) }
 
-print(json.dumps(result))
+print(json.dumps(result, use_decimal=True))
 

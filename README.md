@@ -7,6 +7,7 @@
 
 ## 準備
 - ZaifからAPIキー、シークレットを取得し、環境変数ZAIF_API_KEY, ZAIF_API_SECRET に保存してください。
+- setup.sh を実行してください。
 
 # コマンドリスト
 ## zaif-trade-log
