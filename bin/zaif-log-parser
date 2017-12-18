@@ -39,17 +39,23 @@ def each(subtotal, v):
     'unit_price': Decimal('0'),
     'benefit': Decimal('0')
   }
-  amount = Decimal(record['amount'])
+  in_amount = Decimal(record['amount'])
   fee_amount = Decimal(record['fee_amount'])
   price = Decimal(record['price'])
   # bid のときは手数料が通貨単位で、買った量から差し引かれる
-  diff_amount = amount - (fee_amount if not is_sell else Decimal('0'))
+  diff_amount = in_amount - (fee_amount if not is_sell else Decimal('0'))
   # ask のときは手数料が円単位
   payed_price = fee_amount if is_sell else fee_amount * price
   # 累積通貨資産
   amount = prev['amount'] + sign * diff_amount
-  # 累計JPY資産
-  subtotal_jpy = prev['subtotal_jpy'] + sign * diff_amount * price - payed_price
+  # 購入に使った累計JPY資産
+  # 買ったとき: 追加＝購入金額 - 手数料
+  # 売ったとき: 減少＝現在のsubtotal_jpyが何割減ったか＝(販売量+手数料) * 購入単価
+  subtotal_jpy = Decimal('0')
+  if is_sell:
+    subtotal_jpy = prev['subtotal_jpy'] - in_amount * prev['unit_price']
+  else:
+    subtotal_jpy = prev['subtotal_jpy'] + diff_amount * price - payed_price
   # 現時点の単価
   unit_price = subtotal_jpy / amount
   # 現時点の利益(sellで初めて計上)
