@@ -1,0 +1,10 @@
+#!/bin/bash
+
+while true; do
+  date
+  $(dirname "$0")/zaif-status
+  echo "--------"
+  sleep 3600 # 1 hour
+  # sleep 300 # 5 min
+done | tee -a /tmp/zaif-status-watch.log
+

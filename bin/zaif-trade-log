@@ -1,0 +1,29 @@
+#!/bin/bash
+
+. "$(dirname "$0")/zaif_inc.sh"
+
+# Usage:
+# zaif-trade-log  # print trade log as CSV.
+# zaif-trade-log -j # print trade log as JSON.
+
+_output_type=csv
+if [ "$1" = '-j' ]; then 
+  _output_type=json
+fi
+
+
+
+if [ $_output_type = csv ];then
+  _fmt='.return[] | [((.timestamp|tonumber)/86400+25569), .timestamp,.currency_pair,.your_action,.amount,.fee_amount,.price,.bonus,.comment] | @csv'
+  echo "datetime,timestamp, currency_pair, your_action, amount, fee_amount,price,bonus,comment"
+  zaif_secure_curl 'method=trade_history&is_token=true' | jq -r "$_fmt"
+  zaif_secure_curl 'method=trade_history&is_token=false' | jq -r "$_fmt"
+  exit
+fi
+
+
+jq -s add \
+  <(zaif_secure_curl 'method=trade_history&is_token=true') \
+  <(zaif_secure_curl 'method=trade_history&is_token=false') \
+  | jq -r ".return"
+

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+. "$(dirname "$0")/zaif_inc.sh"
+
+tmpfile=$(mktemp -t zaif_status)
+### zaif_secure_curl method=get_info2 | jq -r '.return.funds | keys[] as $k | "jpy_for \($k) \(.[$k])"' 
+zaif_secure_curl method=get_info2 | jq -r '.return.deposit | keys[] as $k | "\($k) \(.[$k])"' > "$tmpfile"
+
+echo "Currency, Volume, Price, Subtotal"
+sum=0
+for i in $(cat "$tmpfile" | sed -e 's/ /_/');do
+  k=$(echo -n "$i" | sed -e 's/_.*$//')
+  v=$(echo -n "$i" | sed -e 's/^.*_//')
+  csv=$(echo -n "$i" | sed -e "s/_/,/")
+  unit=$(jpy_for $k)
+  subtotal=$(perl -e "print $unit * $v;")
+  echo $csv,$unit,$subtotal
+  sum=$(perl -e "print $sum + $subtotal;")
+
+done
+rm -f "$tmpfile"
+
+echo "Sum,,,$sum"
+
