@@ -83,6 +83,8 @@ def each(subtotal, v):
 result = functools.reduce(each, sorted(input.items()), {})
 
 def sum_benefit(total, v):
+  # skip *_btc trades.
+  if v[0].endswith("_btc"): return total
   return total + v[1]['benefit']
 
 result['total'] = {'benefit':functools.reduce(sum_benefit, result.items(), Decimal('0')) }
