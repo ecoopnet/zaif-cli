@@ -15,10 +15,11 @@
 # コマンドリスト
 ## zaif-trade-log
 zaif の取引履歴をすべて取得し、jsonまたはCSVで出力します。
+引数なしで実行した場合JSONとして出力、--csvを渡した場合CSVとして出力します。
 (要APIKEY,SECRET)
 
 ## zaif-log-parser
-`zaif-trade-log -j` の出力JSONをパースして、現時点の課税対象利益を出します。
+`zaif-trade-log` の出力JSONをパースして、現時点の課税対象利益を出します。
 
 ## zaif-status
 現在の保有通貨を出力します。

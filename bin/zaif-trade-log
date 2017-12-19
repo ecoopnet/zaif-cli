@@ -3,12 +3,12 @@
 . "$(dirname "$0")/zaif_inc.sh"
 
 # Usage:
-# zaif-trade-log  # print trade log as CSV.
-# zaif-trade-log -j # print trade log as JSON.
+# zaif-trade-log       # print trade log as JSON.
+# zaif-trade-log --csv # print trade log as CSV.
 
-_output_type=csv
-if [ "$1" = '-j' ]; then 
-  _output_type=json
+_output_type=json
+if [ "$1" = '--csv' ]; then 
+  _output_type=csv
 fi
 
 
