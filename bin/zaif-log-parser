@@ -9,11 +9,16 @@ import sys
 import functools
 from decimal import *
 import simplejson as json
+import fileinput
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-input = json.load(sys.stdin, encoding='utf-8')
+
+# Do not use json.load(sys.stdin, ..) because json.load() stops reading before EOL.
+inputLines = ""
+for line in fileinput.input(): inputLines += line
+input = json.loads(inputLines, encoding='utf-8')
 
 
 #  "4467575": {
