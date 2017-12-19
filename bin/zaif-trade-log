@@ -21,9 +21,11 @@ if [ $_output_type = csv ];then
   exit
 fi
 
+# don't use file descriptor because of API execution order(nonce value) restriction
+file1=$(mktemp)
+zaif_secure_curl 'method=trade_history&is_token=true' > "$file1"
+file2=$(mktemp)
+zaif_secure_curl 'method=trade_history&is_token=false' > "$file2"
 
-jq -s add \
-  <(zaif_secure_curl 'method=trade_history&is_token=true') \
-  <(zaif_secure_curl 'method=trade_history&is_token=false') \
-  | jq -r ".return"
+jq -s '.[0].return * .[1].return' "$file1" "$file2"
 
