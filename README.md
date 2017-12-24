@@ -1,5 +1,7 @@
 # zaif 用のコマンドラインツール
 
+[Zaif API](http://techbureau-api-document.readthedocs.io/ja/latest/index.html) を使用しています。
+
 # 必要環境
 ## env
 - Python3.6+
