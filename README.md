@@ -23,6 +23,9 @@ zaif の取引履歴をすべて取得し、jsonまたはCSVで出力します�
 
 ## zaif-log-parser
 `zaif-trade-log` の出力JSONをパースして、現時点の課税対象利益を出します。
+
+課税対象利益の計算式は、国税庁の「[仮想通貨に関する所得の計算方法等について（情報）](https://www.nta.go.jp/shiraberu/zeiho-kaishaku/joho-zeikaishaku/shotoku/shinkoku/171127/01.pdf)」を元にして、移動平均で計算しています。
+
 現在のところ、円との取引のみ対応しており、ビットコインと(jpyを除く)他の通貨間の取引(mona_btcなど)には対応していません。
 
 
