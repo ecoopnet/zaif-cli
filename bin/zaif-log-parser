@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-# datetime,timestamp, currency_pair, action, amount, fee_amount,price,bonus,commen
-# 2017/11/7 7:32,1510039948,zaif_jpy,bid,10000,0,0.4698,,,4698,
-
 import sys
 import functools
 from decimal import *
