@@ -86,8 +86,6 @@ def each(subtotal, v):
   eprint(subtotal[key])
   return subtotal
 
-result = functools.reduce(each, sorted(input.items()), {})
-
 # トータル収益計算
 def sum_benefit(total, v):
   # skip *_btc trades.
@@ -109,6 +107,8 @@ def map_prettify(v):
     'benefit': quantize_benefit(record['benefit'])
   }]
 
+
+result = functools.reduce(each, sorted(input.items()), {})
 result['total'] = {'benefit':functools.reduce(sum_benefit, result.items(), ZERO) }
 
 result = dict(map(map_prettify, result.items()))
