@@ -7,10 +7,22 @@ import functools
 from decimal import *
 import simplejson as json
 
+# 仮想通貨丸め桁数(1億円(1E+8)の仮想通貨までを想定)
+ROUNDING_MIN_DIGITS = Decimal('1E-8') # = 1 / 1E+8
 ZERO = Decimal('0')
+
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
+
+# 利益計算用のDecicmal 丸め
+def quantize_benefit(amount):
+  return amount.quantize(ZERO, rounding=ROUND_DOWN) # 1円未満は切り捨てとする
+
+# 通貨全般の Decicmal 丸め
+def quantize_money(amount):
+  res = amount.quantize(ROUNDING_MIN_DIGITS, rounding=ROUND_HALF_UP)
+  return res if res != 0 else ZERO # 0e-N, -0e-N を 0 にする
 
 input = json.load(sys.stdin, encoding='utf-8')
 
@@ -74,14 +86,32 @@ def each(subtotal, v):
   eprint(subtotal[key])
   return subtotal
 
-result = functools.reduce(each, sorted(input.items()), {})
-
+# トータル収益計算
 def sum_benefit(total, v):
   # skip *_btc trades.
   if v[0].endswith("_btc"): return total
   return total + v[1]['benefit']
 
+# 見やすいように数値を丸める
+def map_prettify(v):
+  key = v[0]
+  record = v[1]
+  if key == 'total':
+    return [key, {
+      'benefit': quantize_benefit(record['benefit'])
+    }]
+  return [key, {
+    'amount': quantize_money(record['amount']),
+    'subtotal_jpy': quantize_money(record['subtotal_jpy']),
+    'unit_price': quantize_money(record['unit_price']),
+    'benefit': quantize_benefit(record['benefit'])
+  }]
+
+
+result = functools.reduce(each, sorted(input.items()), {})
 result['total'] = {'benefit':functools.reduce(sum_benefit, result.items(), ZERO) }
+
+result = dict(map(map_prettify, result.items()))
 
 print(json.dumps(result, use_decimal=True))
 
