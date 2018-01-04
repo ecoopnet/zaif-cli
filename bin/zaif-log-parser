@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
+import getopt
 import sys
 import functools
 from decimal import *
@@ -11,6 +12,13 @@ import simplejson as json
 ROUNDING_MIN_DIGITS = Decimal('1E-8') # = 1 / 1E+8
 ZERO = Decimal('0')
 
+verbose = False
+
+def usage():
+  eprint('仮想通貨と円の取引履歴を標準入力で受けて、収支を出力する。')
+  eprint('Options:')
+  eprint('  -h, --help: このヘルプを表示する。')
+  eprint('  -v, --verbose: ログ出力を行う。')
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -107,6 +115,27 @@ def map_prettify(v):
     'benefit': quantize_benefit(record['benefit'])
   }]
 
+## ----
+
+opts = []
+try:
+  opts = getopt.getopt(sys.argv[1:], 'vh', ['verbose', 'help'])
+except getopt.GetoptError as err:
+  eprint(err)
+  usage()
+  sys.exit(2)
+print(opts)
+for o, a in opts:
+  if o in ('-v','--verbose'):
+    verbose = True
+  elif o in ('-h', '--help'):
+    usage()
+    sys.exit()
+  else:
+    usage()
+    sys.exit(2)
+
+## ----
 
 result = functools.reduce(each, sorted(input.items()), {})
 result['total'] = {'benefit':functools.reduce(sum_benefit, result.items(), ZERO) }
