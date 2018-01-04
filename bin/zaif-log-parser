@@ -57,7 +57,7 @@ def each(subtotal, v):
   else:
     subtotal_jpy = prev['subtotal_jpy'] + diff_amount * price - payed_price
   # 現時点の単価
-  unit_price = subtotal_jpy / amount
+  unit_price = subtotal_jpy / amount if amount != 0 else Decimal('0')
   # 現時点の利益(sellで初めて計上)
   diff_benefit=Decimal('0')
   if is_sell:
